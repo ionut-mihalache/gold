@@ -1,76 +1,94 @@
 from antlr4 import *
+
+from classes.BodyNode import BodyNode
+from classes.ConstDefinitionNode import ConstDefinitionNode
+from classes.DescriptionNode import DescriptionNode
+from classes.DescriptionBlockNode import DescriptionBlockNode
+from classes.FileNode import FileNode
+from classes.FilesNode import FilesNode
+from classes.HeaderNode import HeaderNode
+from classes.LanguageNode import LanguageNode
+from classes.TypeNode import TypeNode
+from classes.TypesNode import TypesNode
 from grammars.GOLDParser import GOLDParser
 from grammars.GOLDParserVisitor import GOLDParserVisitor
 
 
 class GOLDParserBaseVisitor(GOLDParserVisitor):
-    tabs = 0
+    # tabs = 0
 
     def visitDescription(self, ctx: GOLDParser.DescriptionContext):
-        for desc_block in ctx.blocks:
-            self.visit(desc_block)
+        descriptions: list = []
 
-        return None
+        for desc_block in ctx.blocks:
+            descriptions.append(self.visit(desc_block))
+
+        return DescriptionNode(descriptions)
 
     def visitDescriptionBlock(self, ctx: GOLDParser.DescriptionBlockContext):
         name: Token = ctx.name
-        print("Visiting description block " + "<" + name.text + ">")
-        self.tabs += 1
-        self.visit(ctx.headerBlock())
-        self.visit(ctx.bodyBlock())
-        self.tabs -= 1
+
+        header_node = self.visit(ctx.headerBlock())
+        body_node = self.visit(ctx.bodyBlock())
+
+        return DescriptionBlockNode(name.text, header_node, body_node)
 
     def visitHeaderBlock(self, ctx: GOLDParser.HeaderBlockContext):
-        print("\t" * self.tabs + "Visiting header block")
+        languages: list[LanguageNode] = []
 
-        self.tabs += 1
         for languageBlock in ctx.lblocks:
-            self.visit(languageBlock)
-        self.tabs -= 1
+            languages.append(self.visit(languageBlock))
+
+        return HeaderNode(languages)
 
     def visitLanguageBlock(self, ctx: GOLDParser.LanguageBlockContext):
         language_name: Token = ctx.langname
-        print("\t" * self.tabs + "Visiting language block " + "<" + language_name.text + ">")
-        self.tabs += 1
-        self.visit(ctx.filesBlock())
-        self.visit(ctx.typesBlock())
-        self.tabs -= 1
+
+        files_node = self.visit(ctx.filesBlock())
+        types_node = self.visit(ctx.typesBlock())
+
+        return LanguageNode(language_name.text, files_node, types_node)
 
     def visitFilesBlock(self, ctx: GOLDParser.FilesBlockContext):
-        print("\t" * self.tabs + "Visiting files block")
-        self.tabs += 1
+        files: list[FileNode] = []
+
         for file in ctx.files:
-            self.visit(file)
-        self.tabs -= 1
+            files.append(self.visit(file))
+
+        return FilesNode(files)
 
     def visitFile(self, ctx: GOLDParser.FileContext):
         name: Token = ctx.filename
         line: Token = ctx.line
         column: Token = ctx.column
 
-        print("\t" * self.tabs + "Visiting file " + "<" + name.text + ":l" + line.text + ":c" + column.text + ">")
+        return FileNode(name.text, int(line.text), int(column.text))
 
     def visitTypesBlock(self, ctx: GOLDParser.TypesBlockContext):
-        print("\t" * self.tabs + "Visiting types block")
-        self.tabs += 1
+        types: list[TypeNode] = []
+
         for t in ctx.types:
-            self.visit(t)
-        self.tabs -= 1
+            types.append(self.visit(t))
+
+        return TypesNode(types)
 
     def visitType(self, ctx: GOLDParser.TypeContext):
         given_name: Token = ctx.goldtype
         orig_name: Token = ctx.langtype
-        print("\t" * self.tabs + "Type " + given_name.text + " -> " + orig_name.text)
+
+        return TypeNode(given_name.text, orig_name.text)
 
     def visitBodyBlock(self, ctx: GOLDParser.BodyBlockContext):
-        print("\t" * self.tabs + "Visiting body block")
-        self.tabs += 1
+        definitions = []
+
         for constant in ctx.constants:
-            self.visit(constant)
-        self.tabs -= 1
+            definitions.append(self.visit(constant))
+
+        return BodyNode(definitions)
 
     def visitCommonConst(self, ctx: GOLDParser.CommonConstContext):
         type_id: Token = ctx.typeId
         var_name: Token = ctx.varName
         var_value: Token = ctx.varValue
-        print("\t" * self.tabs + type_id.text + " " + var_name.text + " = " + var_value.text)
+
+        return ConstDefinitionNode(type_id.text, var_name.text, var_value.text)
