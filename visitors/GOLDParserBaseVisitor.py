@@ -15,7 +15,7 @@ from grammars.GOLDParserVisitor import GOLDParserVisitor
 
 
 class GOLDParserBaseVisitor(GOLDParserVisitor):
-    # tabs = 0
+    __body_node = None
 
     def visitDescription(self, ctx: GOLDParser.DescriptionContext):
         descriptions: list = []
@@ -28,10 +28,11 @@ class GOLDParserBaseVisitor(GOLDParserVisitor):
     def visitDescriptionBlock(self, ctx: GOLDParser.DescriptionBlockContext):
         name: Token = ctx.name
 
-        header_node = self.visit(ctx.headerBlock())
         body_node = self.visit(ctx.bodyBlock())
+        self.__body_node = body_node
+        header_node = self.visit(ctx.headerBlock())
 
-        return DescriptionBlockNode(name.text, header_node, body_node)
+        return DescriptionBlockNode(name.text, header_node)
 
     def visitHeaderBlock(self, ctx: GOLDParser.HeaderBlockContext):
         languages: list[LanguageNode] = []
@@ -47,7 +48,7 @@ class GOLDParserBaseVisitor(GOLDParserVisitor):
         files_node = self.visit(ctx.filesBlock())
         types_node = self.visit(ctx.typesBlock())
 
-        return LanguageNode(language_name.text, files_node, types_node)
+        return LanguageNode(language_name.text, files_node, types_node, self.__body_node)
 
     def visitFilesBlock(self, ctx: GOLDParser.FilesBlockContext):
         files: list[FileNode] = []
@@ -76,7 +77,7 @@ class GOLDParserBaseVisitor(GOLDParserVisitor):
         given_name: Token = ctx.goldtype
         orig_name: Token = ctx.langtype
 
-        return TypeNode(given_name.text, orig_name.text)
+        return TypeNode(given_name.text, orig_name.text[2:-1])
 
     def visitBodyBlock(self, ctx: GOLDParser.BodyBlockContext):
         definitions = []
@@ -91,4 +92,4 @@ class GOLDParserBaseVisitor(GOLDParserVisitor):
         var_name: Token = ctx.varName
         var_value: Token = ctx.varValue
 
-        return ConstDefinitionNode(type_id.text, var_name.text, var_value.text)
+        return ConstDefinitionNode(type_id.text, var_name.text, var_value.text[2:-1])
