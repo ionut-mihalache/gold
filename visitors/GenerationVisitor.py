@@ -17,6 +17,7 @@ class GenerationVisitor(Visitor, ABC):
 
     def __init__(self):
         self.__curr_language_node: LanguageNode | None = None
+        self.__code_lines: list[str] | None = None
 
     def visit_description_node(self, node: DescriptionNode):
         for block in node.get_description_blocks():
@@ -27,19 +28,34 @@ class GenerationVisitor(Visitor, ABC):
 
     def visit_header_node(self, node: HeaderNode):
         for language in node.get_languages():
-            print(language.get_name() + ":")
-            print(self.visit_language_node(language))
+            self.visit_language_node(language)
 
     def visit_language_node(self, node: LanguageNode):
         self.__curr_language_node = node
 
-        return self.visit_body_node(node.get_body_node())
+        self.__code_lines = self.visit_body_node(node.get_body_node())
+        self.visit_files_node(node.get_files_node())
+        self.__code_lines = None
 
     def visit_files_node(self, node: FilesNode):
-        pass
+        for file in node.get_files():
+            self.visit_file_node(file)
 
     def visit_file_node(self, node: FileNode):
-        pass
+        if self.__code_lines is None:
+            return
+
+        with open(node.get_name(), "r+") as f:
+            f_lines = f.readlines()
+
+            self.__code_lines.reverse()
+            for line in self.__code_lines:
+                f_lines.insert(node.get_line(), " " * node.get_column() + line + "\n")
+
+            # set cursor back at the start of the file
+            f.seek(0)
+
+            f.writelines(f_lines)
 
     def visit_types_node(self, node: TypesNode):
         pass
@@ -48,10 +64,9 @@ class GenerationVisitor(Visitor, ABC):
         pass
 
     def visit_body_node(self, node: BodyNode):
-        res: str = ""
+        res: list[str] = []
         for definition in node.get_definitions():
-            res += self.visit_definition_node(definition)
-            res += "\n"
+            res.append(self.visit_definition_node(definition))
 
         return res
 

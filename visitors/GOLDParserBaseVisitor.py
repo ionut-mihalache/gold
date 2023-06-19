@@ -63,7 +63,7 @@ class GOLDParserBaseVisitor(GOLDParserVisitor):
         line: Token = ctx.line
         column: Token = ctx.column
 
-        return FileNode(name.text, int(line.text), int(column.text))
+        return FileNode(name.text[1:-1], int(line.text), int(column.text))
 
     def visitTypesBlock(self, ctx: GOLDParser.TypesBlockContext):
         types: list[TypeNode] = []
