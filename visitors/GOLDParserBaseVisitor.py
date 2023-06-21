@@ -60,10 +60,10 @@ class GOLDParserBaseVisitor(GOLDParserVisitor):
 
     def visitFile(self, ctx: GOLDParser.FileContext):
         name: Token = ctx.filename
-        line: Token = ctx.line
-        column: Token = ctx.column
+        start_block: Token = ctx.startblock
+        end_block: Token = ctx.endblock
 
-        return FileNode(name.text[1:-1], int(line.text), int(column.text))
+        return FileNode(name.text[1:-1], start_block.text, end_block.text)
 
     def visitTypesBlock(self, ctx: GOLDParser.TypesBlockContext):
         types: list[TypeNode] = []

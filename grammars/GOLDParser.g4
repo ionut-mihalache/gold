@@ -14,7 +14,7 @@ languageBlock: LBLK langname=LANGUAGE BLKSTART filesBlock typesBlock BLKEND LINE
 
 filesBlock: FBLK BLKSTART (files+=file)+ BLKEND LINEEND;
 
-file: LSTSTART filename=STRINGVALUE COMMA line=NUMBER COMMA column=NUMBER LSTEND LINEEND;
+file: LSTSTART filename=STRINGVALUE COMMA startblock=NAME COMMA endblock=NAME LSTEND LINEEND;
 
 typesBlock: TBLK BLKSTART (types+=type)+ BLKEND LINEEND;
 

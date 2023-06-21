@@ -16,12 +16,15 @@ from classes.TypesNode import TypesNode
 class GenerationVisitor(Visitor, ABC):
 
     def __init__(self):
+        self.__description_block_node: DescriptionBlockNode | None = None
         self.__curr_language_node: LanguageNode | None = None
         self.__code_lines: list[str] | None = None
 
     def visit_description_node(self, node: DescriptionNode):
         for block in node.get_description_blocks():
+            self.__description_block_node = block
             self.visit_description_block_node(block)
+            self.__description_block_node = None
 
     def visit_description_block_node(self, node: DescriptionBlockNode):
         self.visit_header_node(node.get_header_node())
@@ -42,19 +45,53 @@ class GenerationVisitor(Visitor, ABC):
             self.visit_file_node(file)
 
     def visit_file_node(self, node: FileNode):
-        if self.__code_lines is None:
+        if self.__description_block_node is None or self.__code_lines is None:
             return
+
+        begin_block = node.get_start_block() + "(" + self.__description_block_node.get_name() + ")"
+        end_block = node.get_end_block() + "(" + self.__description_block_node.get_name() + ")"
 
         with open(node.get_name(), "r+") as f:
             f_lines = f.readlines()
 
+            indices: list[list] = []
+            block_stack = []
+            for idx, elem in enumerate(f_lines):
+                if begin_block in elem:
+                    block_stack.append(elem)
+                    indices.append([idx, -1, -1])
+                    continue
+                if end_block in elem:
+                    if len(block_stack) == 0:
+                        print("The " + node.get_name() + " is not properly constructed for GOLD generation")
+                        print("End block " + elem.strip(" \n") + " has no begin block")
+                        continue
+
+                    block_stack_top = block_stack[-1]
+                    if begin_block not in block_stack_top:
+                        print("The " + node.get_name() + " is not properly constructed for GOLD generation")
+                        print("End block " + elem.strip(" \n") + " has no begin block")
+                        continue
+
+                    begin_block_line = block_stack.pop()
+                    indices[-1][1] = idx
+                    indices[-1][2] = len(begin_block_line) - len(begin_block_line.lstrip())
+
+            if len(block_stack) != 0:
+                print("The " + node.get_name() + " is not properly constructed for GOLD generation")
+                print("Begin block " + block_stack[-1].strip(" \n") + " has no end block")
+                return
+
+            # Remove lines contained by the beginning and end block, and insert line in code
+            indices.reverse()
             self.__code_lines.reverse()
-            for line in self.__code_lines:
-                f_lines.insert(node.get_line(), " " * node.get_column() + line + "\n")
+            for (start_line, end_line, column) in indices:
+                f_lines = f_lines[:start_line + 1] + f_lines[end_line:]
+                for line in self.__code_lines:
+                    f_lines.insert(start_line + 1, " " * column + line + "\n")
 
             # set cursor back at the start of the file
             f.seek(0)
-
             f.writelines(f_lines)
 
     def visit_types_node(self, node: TypesNode):

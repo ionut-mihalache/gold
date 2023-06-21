@@ -51,7 +51,7 @@ class PrintVisitor(Visitor, ABC):
 
     def visit_file_node(self, node: FileNode):
         print("\t" * self.__tabs + "file: " +
-              node.get_name() + ":l" + str(node.get_line()) + ":c" + str(node.get_column()))
+              node.get_name() + ":" + node.get_start_block() + ":" + node.get_end_block())
 
     def visit_types_node(self, node: TypesNode):
         print("\t" * self.__tabs + "Visiting types block")
