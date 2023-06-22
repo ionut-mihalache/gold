@@ -92,6 +92,7 @@ class GenerationVisitor(Visitor, ABC):
 
             # set cursor back at the start of the file
             f.seek(0)
+            f.truncate(0)
             f.writelines(f_lines)
 
     def visit_types_node(self, node: TypesNode):
