@@ -8,6 +8,7 @@ from visitors.GOLDParserBaseVisitor import GOLDParserBaseVisitor
 from visitors.GenerationVisitor import GenerationVisitor
 from visitors.PrintVisitor import PrintVisitor
 
+DESCRIPTION_DIR = "descriptions"
 
 def get_parser(filename):
     input_stream = FileStream(filename)
@@ -18,16 +19,24 @@ def get_parser(filename):
 
 
 def main():
-    parser = get_parser(sys.argv[1])
-    tree = parser.description()
-    base_visitor = GOLDParserBaseVisitor()
-    root_node: DescriptionNode = base_visitor.visit(tree)
+    argc: int = len(sys.argv)
+    if len(sys.argv) < 1:
+        print("Not enough command line parameters.")
+        print("At least description file should be provided.")
+        print("<python> gold.py <file1_path>.gold <file2_path>.gold ...")
+        exit(1)
 
-    print_visitor = PrintVisitor()
-    generation_visitor = GenerationVisitor()
+    for i in range(1, argc):
+        parser = get_parser(DESCRIPTION_DIR + "/" + sys.argv[i])
+        tree = parser.description()
+        base_visitor = GOLDParserBaseVisitor()
+        root_node: DescriptionNode = base_visitor.visit(tree)
 
-    root_node.accept(print_visitor)
-    root_node.accept(generation_visitor)
+        print_visitor = PrintVisitor()
+        generation_visitor = GenerationVisitor()
+
+        root_node.accept(print_visitor)
+        root_node.accept(generation_visitor)
 
 
 if __name__ == "__main__":
