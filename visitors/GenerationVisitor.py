@@ -120,9 +120,7 @@ class GenerationVisitor(Visitor, ABC):
         language = curr_lang_node.get_name()
         definition_type: TypeNode = self.__curr_language_node.lookup_type_id(node.get_type())
 
-        if language == "php":
+        if language == "php" or language == "js":
             return definition_type.get_orig_name() + " " + node.get_name() + " = " + node.get_value() + ";"
-        elif language == "js":
-            return node.get_name() + " = " + node.get_value() + ";"
         else:
             print(language + " generation not supported")

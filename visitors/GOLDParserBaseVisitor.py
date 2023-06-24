@@ -10,8 +10,8 @@ from classes.HeaderNode import HeaderNode
 from classes.LanguageNode import LanguageNode
 from classes.TypeNode import TypeNode
 from classes.TypesNode import TypesNode
-from grammars.GOLDParser import GOLDParser
-from grammars.GOLDParserVisitor import GOLDParserVisitor
+from grammars.gen.GOLDParser import GOLDParser
+from grammars.gen.GOLDParserVisitor import GOLDParserVisitor
 
 
 class GOLDParserBaseVisitor(GOLDParserVisitor):
