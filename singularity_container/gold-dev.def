@@ -6,12 +6,7 @@ From: ubuntu:22.04
 	apt-get -y upgrade
 	apt-get install -y git
 	apt-get install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget libbz2-dev
-	apt-get install -y python2 python3 python3-pip
-	apt-get install -y curl
-	curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
-	python2 get-pip.py
-	rm get-pip.py
-	pip2 install antlr4-python2-runtime
+	apt-get install -y python3 python3-pip
 	pip3 install antlr4-python3-runtime
 	apt-get -y install net-tools
 	apt-get -y install default-jdk default-jre
@@ -20,10 +15,11 @@ From: ubuntu:22.04
 %runscript
 	#!/bin/bash
 	if [ "$1" = "build" ]; then
-	    make && make run FILE=test.gold
+	    make
 	fi
-	if [ "$1" = "run" ]; then
-	    make run FILE=$2
+	if [ "$1" = "describe" ]; then
+	    export FILES="${@:2}"
+	    make run
 	fi
 	if [ "$1" = "clean" ]; then
 	    make clean
