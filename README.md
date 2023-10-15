@@ -3,7 +3,7 @@
 **General Objects Language Description** (*__GOLD__*) is a **describing** language that can be used to describe common patterns 
 in applications that are implemented using multiple programming languages (e.g. frontend - backend for web application).
 
-## Language properties and description - TODO ##
+## Language properties and description ##
 The main component of the language is the __block__ or __object__ and the main action is the __description__.
 
 The current version of the __GOLD__ language defines the following blocks that can be used for description:
