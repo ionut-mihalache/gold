@@ -1,0 +1,12 @@
+version: "3.7"
+
+services:
+  ubuntu:
+    container_name: ubuntu
+    user: root
+    build:
+      context: .
+      dockerfile: Dockerfile
+    tty: true
+    volumes:
+      - ../:/root/GOLD
