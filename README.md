@@ -31,6 +31,9 @@ The tags for marking the start and the end of the __description__ block in the f
 
 The __types__ block describes the mapping between a __GOLD__ specific type and the language specific type. Each __types__ block has to describe the same __GOLD__ specific types for all the languages in order to make it possible to use the types in the __body__ block.
 
+The __body__ block describes the common parts of all the languages described by the __language__ blocks inside the __header__ block. The sintax is similar to any other language in order to make it easy to write and understand.
+The type will be replaced accordingly for each __language__ block described by the __header__ block.
+
 For the current version a __GOLD__ file looks like this:
 ```
 % GOLD comment - it is ignored on code generation %
