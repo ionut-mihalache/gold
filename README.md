@@ -1,3 +1,7 @@
+<p align="center">
+     <img alt="logo" src="doc/assets/logo.png" width="50%" align="center"/>
+</p>
+
 # General Objects Language Description #
 
 **General Objects Language Description** (*__GOLD__*) is a **describing** language that can be used to describe common patterns 
