@@ -20,7 +20,7 @@ def get_parser(filename):
 
 def main():
     argc: int = len(sys.argv)
-    if len(sys.argv) < 1:
+    if len(sys.argv) < 2:
         print("Not enough command line parameters.")
         print("At least description file should be provided.")
         print("<python> gold.py <file1_path>.gold <file2_path>.gold ...")
