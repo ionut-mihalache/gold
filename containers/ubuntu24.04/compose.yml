@@ -1,0 +1,14 @@
+services:
+  gold:
+    container_name: gold
+    hostname: gold
+    restart: always
+
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+
+    volumes:
+      - ~/.ssh:/.host-ssh:ro
+      - ./start.sh:/start.sh
+      - ../../../gold:/root/gold
