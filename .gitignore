@@ -1,3 +1,4 @@
 /descriptions/*
 /tests/*
 /.idea
+__pycache__
