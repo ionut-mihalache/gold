@@ -1,5 +1,5 @@
 <p align="center">
-     <img alt="logo" src="doc/assets/logo.png" width="50%" align="center"/>
+     <img alt="logo" src="doc/assets/logo.png" width="75%" align="center"/>
 </p>
 
 # General Objects Language Description #
